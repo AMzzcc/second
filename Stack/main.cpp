@@ -20,7 +20,7 @@ int main(void)
 	//firstStack.pop();
 	/*if (firstStack.isEmptyStack())cout << "is empty" << endl;
 	firstStack.pop();*/
-
+	/*cout << pow(-2, 2) << endl;*/
 	while (true)
 	{
 		choice = -1;

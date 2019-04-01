@@ -32,6 +32,7 @@ bool Calculator::ClearCalculator()
 bool Calculator::compare(char a, char b)//b是要插入的
 {
 	if (a == '_')return true;
+	if (a == '^')return true;
 	if (b == '+' ||b== '-')
 	{
 		if(a!='(')return true;
@@ -172,6 +173,7 @@ bool Calculator::calculate(double &e)
 			}
 			else if(cur.oper=='%')
 			{
+				if (num_b == 0)return false;//分母不为0
 				temp.num = (int)num_a % (int)num_b;
 			}
 			else if(cur.oper=='/')
@@ -179,6 +181,11 @@ bool Calculator::calculate(double &e)
 				if (num_b == 0)return false;//分母不为0
 				temp.num = num_a / num_b;
 			}
+			else if (cur.oper == '^')
+			{
+				temp.num = pow(num_a, num_b);
+			}
+			else return false;
 			s1.push(temp);//把计算后的结果再次压栈
 		}
 	}
@@ -206,7 +213,7 @@ bool Calculator::Print(LinkStack < node >& q1)
 	return true;
 }
 
-//bool Calculator::negative(string input, int &i)
+//bool Calculator::negative(string input, int &i)    //负号不分离
 //{
 //	node temp;
 //	char op;
@@ -318,12 +325,12 @@ bool Calculator::Print(LinkStack < node >& q1)
 //	return false;
 //}
 
-bool Calculator::negative(string input, int &i)
+bool Calculator::negative(string input, int &i)   //负号用‘_'代替的分离
 {
 	//A.在开头
 	node temp;
 	temp.judge = false;
-	if ((i == 0 &&input[i + 1] == '-')||(i>0&&input[i-1]=='('))
+	if ((i == 0 &&input[i + 1] == '-')||(i>0&&input[i-1]=='('&&input[i + 1] == '-'))
 	{
 		i += 2;
 		return true;
