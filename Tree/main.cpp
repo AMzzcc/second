@@ -9,18 +9,6 @@ int main(void)
 	Calculator cal;
 	double answer;
 	int choice=-1;
-	/*LinkStack<int> firstStack;//≤‚ ‘¥˙¬Î
-	for (int c = 0; c <= 6; ++c)
-	{
-		firstStack.push(c);
-	}
-	firstStack.stackTraverse();
-	cout << firstStack.getTopStack() << endl;
-	cout << firstStack.LStackLength() << endl;*/
-	//firstStack.pop();
-	/*if (firstStack.isEmptyStack())cout << "is empty" << endl;
-	firstStack.pop();*/
-	/*cout << pow(-2, 2) << endl;*/
 	while (true)
 	{
 		choice = -1;
@@ -54,10 +42,14 @@ int main(void)
 			while (true)
 			{
 				cin >> input;
+
 				cal.change(input);
-				cal.Print(cal.q1);
-				cal.Print(cal.q);
-				if (cal.calculate(answer))
+				//cal.Print(cal.q);
+				MakeTree(&cal.q,&answer);
+				cout << "The answer is:";
+				cout << answer << endl;
+				cout << '\n';
+				/*if (cal.calculate(answer))
 				{
 					cout << "The answer is:";
 					cout << answer << endl;
@@ -68,7 +60,7 @@ int main(void)
 				}
 				else cout << "Error input!Please input correctly:";
 				if (cal.ClearCalculator());
-				else cout << "clear error" << endl;
+				else cout << "clear error" << endl;*/
 			}
 		}
 		else if (choice == 2)
@@ -81,10 +73,6 @@ int main(void)
 		
 	}
 	
-	/*for (int c = 0; c < input.length(); c++)//≤‚ ‘¥˙¬Î
-	{
-		cout << input[c]<<endl;
-	}*/
 	system("pause");
 	return 0;
 }
