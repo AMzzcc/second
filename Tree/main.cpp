@@ -44,12 +44,9 @@ int main(void)
 				cin >> input;
 
 				cal.change(input);
-				//cal.Print(cal.q);
-				MakeTree(&cal.q,&answer);
-				cout << "The answer is:";
-				cout << answer << endl;
-				cout << '\n';
-				/*if (cal.calculate(answer))
+				
+				cal.Print(cal.q);
+				if (MakeTree(&cal.q, &answer))
 				{
 					cout << "The answer is:";
 					cout << answer << endl;
@@ -60,7 +57,7 @@ int main(void)
 				}
 				else cout << "Error input!Please input correctly:";
 				if (cal.ClearCalculator());
-				else cout << "clear error" << endl;*/
+				else cout << "clear error" << endl;
 			}
 		}
 		else if (choice == 2)

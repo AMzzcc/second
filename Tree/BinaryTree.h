@@ -26,7 +26,7 @@ public:
 	void remove(const T&e);
 	void Print();
 	void CreateBitTree(stack<node>q);
-	void CreateBinaryTree(stack<node>q);
+	void CreateBinaryTree(stack<node>q, double* answer);
 	double Value();
 	
 private:
@@ -67,7 +67,7 @@ private:
 
 
 	bool CreateBiTree(BinaryNode* t, stack<node>q);   //前缀
-	bool CreateBinaryTree(BinaryNode* t, stack<node>q);  //后缀
+	bool CreateBinaryTree(BinaryNode* t, stack<node>q, double* answer);  //后缀
 	
 	double Value(BinaryNode*t);
 	//构造出的二叉树求值
@@ -78,20 +78,8 @@ private:
 
 
 };
-template <typename T>
-ostream & operator<<(ostream & output, const node & d)
-{
-	if (d.judge)
-	{
-		output << d.num;
-	}
-	else if (!d.judge)
-	{
-		output << d.oper;
-	}
+//template <typename T>
 
-	return output;
-}
 
 template<typename T>
 inline BinaryTree<T>::BinaryTree()
@@ -158,7 +146,7 @@ inline void BinaryTree<T>::remove(const T & e)
 template<typename T>
 inline void BinaryTree<T>::Print()
 {
-	PreOrderTraverse(root, print);
+	if(!PreOrderTraverse(root, print))cout<<"error pre print";
 	cout << endl;
 	//InOrderTraverse(root, print);	//中序遍历
 	//cout << endl;
@@ -174,9 +162,10 @@ inline void BinaryTree<T>::CreateBitTree(stack<node>q)
 }
 
 template<typename T>
-inline void BinaryTree<T>::CreateBinaryTree(stack<node> q)
+inline void BinaryTree<T>::CreateBinaryTree(stack<node> q, double* answer)
 {
-	CreateBinaryTree(root, q);
+	if (!CreateBinaryTree(root, q,answer))
+		cout << "error create" << endl;
 }
 
 template<typename T>
@@ -287,7 +276,7 @@ inline void BinaryTree<T>::makeEmpty(BinaryNode *& t)
 template<typename T>
 inline void BinaryTree<T>::print(T e)
 {
-	cout << e << " ";
+	cout << static_cast<Node> (e) << " ";
 }
 
 template<typename T>
@@ -299,7 +288,7 @@ inline void BinaryTree<T>::Push(T e)
 template<typename T>
 typename BinaryTree<T>::BinaryNode * BinaryTree<T>::clone(BinaryNode * t) const
 {
-	if (t == nullptr)return t;
+	if (t == nullptr)return nullptr;
 	else
 		return new BinaryNode{ t->data,clone(t->left),clone(t->right) };
 }
@@ -413,7 +402,7 @@ bool BinaryTree<T>::CreateBiTree(BinaryNode* t, stack<node>q)
 }
 
 template<typename T>
-inline bool BinaryTree<T>::CreateBinaryTree(BinaryNode * t, stack<node> q)
+inline bool BinaryTree<T>::CreateBinaryTree(BinaryNode * t, stack<node> q, double* answer)
 {
 	stack<BinaryNode*>s;
 	BinaryNode* now;
@@ -433,7 +422,16 @@ inline bool BinaryTree<T>::CreateBinaryTree(BinaryNode * t, stack<node> q)
 		}
 		else if (!q.top().judge)
 		{
-			now = &*s.top();
+			if (q.top().oper == '_')
+			{
+				now = s.top();
+				s.pop();
+				now = new BinaryNode{ q.top(),now,nullptr};
+				s.push(now);
+				q.pop();
+				continue;
+			}
+			now = s.top();
 			s.pop();
 			then= s.top();
 			s.pop();
@@ -442,7 +440,13 @@ inline bool BinaryTree<T>::CreateBinaryTree(BinaryNode * t, stack<node> q)
 			q.pop();
 		}
 	}
-	t = clone(s.top());
+	cout << "生成的前缀表达式：";
+	if (!PreOrderTraverse(s.top(), print))cout << "error pre print";
+	cout << endl;
+	cout << "生成的二叉树：";
+	LevelOrderTraverse(s.top(), print);	//层序遍历
+	*answer = Value(s.top());
+	/*t = clone(s.top());*/
 	while (!s.empty())
 		s.pop();
 	return true;
@@ -453,8 +457,8 @@ double BinaryTree<T>::Value(BinaryNode*t)
 {
 	if (t == nullptr)return 0;
 	stack<BinaryNode*>s;
-	BinaryTree *p;
-	BinaryTree *LastView;
+	BinaryNode *p;
+	BinaryNode *LastView;
 	p = t;
 	LastView = nullptr;
 	while (p->left!=nullptr)
@@ -466,33 +470,39 @@ double BinaryTree<T>::Value(BinaryNode*t)
 	{
 		p = s.top();
 		s.pop();
-		if (p->right == LastView)
+		if (p->right == nullptr)
+		{
+			p->data.judge = true;
+			p->data.num = -(p->left->data.num);
+			LastView = p;
+		}
+		else if (p->right == LastView)
 		{
 			p->data.judge = true;
 			if (p->data.oper == '+')
 			{
-				p->data.num = p->left.num + p->right.num;
+				p->data.num = p->left->data.num + p->right->data.num;
 			}
 			else if (p->data.oper == '-')
 			{
-				p->data.num = p->left.num - p->right.num;
+				p->data.num = p->left->data.num - p->right->data.num;
 			}
 			else if (p->data.oper == '*')
 			{
-				p->data.num = p->left.num * p->right.num;
+				p->data.num = p->left->data.num * p->right->data.num;
 			}
 			else if (p->data.oper == '/')
 			{
-				p->data.num = p->left.num / p->right.num;
+				p->data.num = p->left->data.num / p->right->data.num;
 			}
 			else if (p->data.oper == '%')
 			{
 				
-				p->data.num =(int) p->left.num %(int) p->right.num;
+				p->data.num =(int) p->left->data.num %(int) p->right->data.num;
 			}
 			else if (p->data.oper == '^')
 			{
-				p->data.num =pow( p->left.num , p->right.num);
+				p->data.num =powf((float) p->left->data.num, (float)p->right->data.num);
 			}
 			LastView = p;
 		}
@@ -500,15 +510,16 @@ double BinaryTree<T>::Value(BinaryNode*t)
 		{
 			s.push(p);
 			p = p->right;
-			while (p)
+			while (p->left!=nullptr)
 			{
 				s.push(p);
 				p = p->left;
 			}
+			LastView = p;
 		}
 	}
 	double answer = p->data.num;
-	if (p != nullptr)
+	/*if (p != nullptr)
 	{
 		delete(p);
 		p = nullptr;
@@ -517,7 +528,7 @@ double BinaryTree<T>::Value(BinaryNode*t)
 	{
 		delete(LastView);
 		LastView = nullptr;
-	}
+	}*/
 	return answer;
 }
 
@@ -525,7 +536,7 @@ template<typename T>
 inline bool BinaryTree<T>::PreOrderTraverse(BinaryNode* t, void(*visit)(T e))
 {
 	if (t == nullptr)
-		return true;
+		return false;
 	else
 		visit(t->data);
 
@@ -639,8 +650,8 @@ inline bool BinaryTree<T>::PostOrderTraverseWithout(BinaryNode * t, void(*visit)
 {
 	if (t == nullptr)return true;
 	stack<BinaryNode*>s;
-	BinaryTree *p;
-	BinaryTree *LastView;
+	BinaryNode *p;
+	BinaryNode *LastView;
 	p = t;
 	LastView = nullptr;
 	while (p)

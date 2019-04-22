@@ -1,5 +1,8 @@
 #ifndef _LINKSTACK_H_
 #define _LINKSTACK_H_
+#include <iostream>
+using namespace std;
+
 template <typename T>
 class LinkStack //Á´Õ»
 {
